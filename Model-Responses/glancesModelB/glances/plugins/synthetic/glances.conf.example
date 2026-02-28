@@ -1,0 +1,111 @@
+##############################################################################
+# Synthetic Monitoring Plugin Configuration
+#
+# This plugin performs active health probes to verify that critical services
+# are actually responsive, not just checking their status as up or down.
+#
+# Supported probe types:
+#   - HTTP/HTTPS: Performs HTTP requests and measures response time
+#   - SQL: Connects to databases and executes test queries
+#
+# Add this section to your glances.conf file to enable synthetic monitoring.
+##############################################################################
+
+[synthetic]
+# Global settings for all probes
+# Refresh interval in seconds (how often to run probes)
+refresh=60
+# Default timeout in seconds for all probes
+timeout=10
+
+##############################################################################
+# HTTP/HTTPS Probes
+#
+# Define HTTP probes with the following pattern:
+#   http_<N>_url=<URL>              (required) Target URL to probe
+#   http_<N>_label=<LABEL>          (optional) Custom label for display
+#   http_<N>_method=<METHOD>        (optional) HTTP method: GET or HEAD (default: GET)
+#   http_<N>_timeout=<SECONDS>      (optional) Timeout override (default: global timeout)
+#   http_<N>_refresh=<SECONDS>      (optional) Refresh override (default: global refresh)
+#   http_<N>_expected_status=<CODE> (optional) Expected HTTP status (default: 200)
+#   http_<N>_ssl_verify=<BOOL>      (optional) Verify SSL certificates (default: true)
+#
+# Where <N> is a number from 1 to 255
+##############################################################################
+
+# Example: Internal API Gateway
+http_1_url=https://api.internal.example.com/health
+http_1_label=API Gateway
+http_1_method=GET
+http_1_timeout=5
+http_1_expected_status=200
+
+# Example: Authentication Service
+http_2_url=https://auth.internal.example.com/status
+http_2_label=Auth Service
+http_2_method=HEAD
+http_2_timeout=3
+
+# Example: External dependency
+http_3_url=https://external-api.example.com/ping
+http_3_label=External API
+http_3_timeout=10
+http_3_ssl_verify=true
+
+# Example: Internal service with custom port
+http_4_url=http://internal-service.local:8080/ready
+http_4_label=Internal Service
+http_4_expected_status=200
+
+##############################################################################
+# SQL Database Probes
+#
+# Define SQL probes with the following pattern:
+#   sql_<N>_connection_string=<CONN> (required) SQLAlchemy connection string
+#   sql_<N>_label=<LABEL>            (optional) Custom label for display
+#   sql_<N>_query=<SQL>              (optional) Test query (default: SELECT 1)
+#   sql_<N>_timeout=<SECONDS>        (optional) Timeout override
+#   sql_<N>_refresh=<SECONDS>        (optional) Refresh override
+#
+# Where <N> is a number from 1 to 255
+#
+# Connection string formats (SQLAlchemy):
+#   PostgreSQL: postgresql://user:password@host:port/database
+#   MySQL:      mysql+pymysql://user:password@host:port/database
+#   SQLite:     sqlite:///path/to/database.db
+#   SQL Server: mssql+pyodbc://user:password@host:port/database?driver=ODBC+Driver+17+for+SQL+Server
+#   Oracle:     oracle+cx_oracle://user:password@host:port/database
+##############################################################################
+
+# Example: Primary PostgreSQL database
+sql_1_connection_string=postgresql://monitor:password@db-primary.internal:5432/production
+sql_1_label=Primary DB
+sql_1_query=SELECT 1
+sql_1_timeout=5
+
+# Example: MySQL replica
+sql_2_connection_string=mysql+pymysql://monitor:password@db-replica.internal:3306/production
+sql_2_label=MySQL Replica
+sql_2_query=SELECT 1
+sql_2_timeout=5
+
+# Example: Local SQLite database (for testing)
+sql_3_connection_string=sqlite:///var/lib/app/data.db
+sql_3_label=Local SQLite
+sql_3_query=SELECT 1
+
+##############################################################################
+# Alert Thresholds (optional)
+#
+# Define latency thresholds for alerts:
+#   careful=<MS>   Latency above this value triggers CAREFUL alert
+#   warning=<MS>   Latency above this value triggers WARNING alert
+#   critical=<MS>  Latency above this value triggers CRITICAL alert
+#
+# Note: Probes that fail or timeout always trigger CRITICAL/WARNING alerts
+##############################################################################
+
+# Example thresholds (in milliseconds)
+# careful=100
+# warning=500
+# critical=1000
