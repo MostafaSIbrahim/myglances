@@ -1,0 +1,60 @@
+##############################################################################
+# Synthetic Monitoring Plugin Configuration
+#
+# This section configures active health probes (HTTP/HTTPS and SQL) to measure
+# service responses and latency.
+#
+# Add this section to your glances.conf file.
+##############################################################################
+
+[synthetic]
+# Global settings (can be overridden per-probe)
+refresh=30
+timeout=10
+
+# HTTP/HTTPS Probes
+# Format: http_<N>_<option>=<value>
+# Required: url
+# Optional: label, method, timeout, expected_status, verify_ssl, headers, refresh
+
+# Example: Internal API health check
+http_1_url=https://api.internal.example.com/health
+http_1_label=Internal API
+http_1_method=GET
+http_1_timeout=5
+http_1_expected_status=200
+http_1_verify_ssl=true
+
+# Example: External service check
+http_2_url=https://api.example.com/status
+http_2_label=External API
+http_2_expected_status=200
+
+# Example: Custom headers (comma-separated key:value pairs)
+http_3_url=https://api.example.com/auth-check
+http_3_label=Auth Service
+http_3_headers=Authorization:Bearer token123,X-Custom:value
+
+# SQL Probes
+# Format: sql_<N>_<option>=<value>
+# Required: connection
+# Optional: label, db_type, query, timeout, refresh
+
+# Example: PostgreSQL database
+sql_1_connection=postgresql://user:password@localhost:5432/mydb
+sql_1_label=Main PostgreSQL
+sql_1_db_type=postgresql
+sql_1_query=SELECT 1
+sql_1_timeout=5
+
+# Example: MySQL database
+sql_2_connection=user:password@localhost:3306/mydb
+sql_2_label=MySQL Replica
+sql_2_db_type=mysql
+sql_2_query=SELECT 1
+
+# Example: SQLite database
+sql_3_connection=/path/to/database.db
+sql_3_label=Local SQLite
+sql_3_db_type=sqlite
+sql_3_query=SELECT 1
